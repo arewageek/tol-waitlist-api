@@ -1,7 +1,7 @@
 import express, { Express} from 'express'
 import {Bot, InlineKeyboard} from 'grammy'
-import {waitlistInvitation} from './helpers/messages'
-import {verifyWaitlistStatus} from './helpers/queries'
+import {waitlistInvitation} from '../helpers/messages'
+import {verifyWaitlistStatus} from '../helpers/queries'
 
 
 const app:Express = express()

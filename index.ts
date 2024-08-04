@@ -49,18 +49,15 @@ app.post("/bot", async function (req: Request, res: Response) {
 
     console.log({ joinWaitlistMsg });
 
-    ctx.replyWithPhoto(
-      "https://pintu-academy.pintukripto.com/wp-content/uploads/2023/12/Ton.png",
-      {
-        caption: joinWaitlistMsg.message,
-        reply_markup: new InlineKeyboard().webApp(
-          isJoinedWaitlist ? "Check My Points ✨💎" : "Join Waitlist 🚀🚀🚀",
-          isJoinedWaitlist
-            ? joinWaitlistMsg.link.joined
-            : joinWaitlistMsg.link.new
-        ),
-      }
-    );
+    ctx.replyWithPhoto("https://i.ibb.co/0rgHwc2/IMG-3987.png", {
+      caption: joinWaitlistMsg.message,
+      reply_markup: new InlineKeyboard().webApp(
+        isJoinedWaitlist ? "Check My Points ✨💎" : "Join Waitlist 🚀🚀🚀",
+        isJoinedWaitlist
+          ? joinWaitlistMsg.link.joined
+          : joinWaitlistMsg.link.new
+      ),
+    });
   });
 
   bot.start();

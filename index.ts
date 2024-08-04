@@ -8,11 +8,18 @@ const port = process.env.PORT || 5000;
 
 const botAPi = process.env.TELEGRAM_BOT_API as string;
 
-const bot = new Bot(botAPi);
+let bot: Bot;
 
-app.get("/", async function (req: Request, res: Response) {
-  res.json({ status: "success" });
-});
+let isBotRunning = false;
+
+function startBot() {
+  if (!isBotRunning) {
+    bot = new Bot(botAPi);
+    isBotRunning = true;
+  }
+}
+
+startBot();
 
 app.get("/webhook/set", async function (req: Request, res: Response) {
   const webhookUrl = process.env.TELEGRAM_WEBHOOK_URL;

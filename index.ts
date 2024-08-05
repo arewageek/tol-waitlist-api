@@ -15,9 +15,10 @@ let isBotRunning = false;
 function startBot() {
   if (!isBotRunning) {
     bot = new Bot(botAPi);
-    isBotRunning = true;
-
+    bot.stop();
     bot.start();
+
+    isBotRunning = true;
   }
 }
 

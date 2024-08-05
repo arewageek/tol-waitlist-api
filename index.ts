@@ -16,6 +16,8 @@ function startBot() {
   if (!isBotRunning) {
     bot = new Bot(botAPi);
     isBotRunning = true;
+
+    bot.start();
   }
 }
 
@@ -39,35 +41,37 @@ app.get("/webhook/set", async function (req: Request, res: Response) {
 });
 
 app.post("/bot", async function (req: Request, res: Response) {
-  console.log("received");
+  try {
+    console.log("received");
 
-  bot.command("start", async (ctx) => {
-    const sender = ctx.from;
-    console.log({ sender });
+    bot.command("start", async (ctx) => {
+      const sender = ctx.from;
+      console.log({ sender });
 
-    const isJoinedWaitlist = await verifyWaitlistStatus(
-      sender?.id.toLocaleString()!
-    );
+      const isJoinedWaitlist = await verifyWaitlistStatus(
+        sender?.id.toLocaleString()!
+      );
 
-    const joinWaitlistMsg = await waitlistInvitation(
-      sender?.id!,
-      sender?.first_name!
-    );
+      const joinWaitlistMsg = await waitlistInvitation(
+        sender?.id as unknown as string,
+        sender?.first_name!
+      );
 
-    console.log({ joinWaitlistMsg });
+      console.log({ joinWaitlistMsg });
 
-    ctx.replyWithPhoto("https://i.ibb.co/0rgHwc2/IMG-3987.png", {
-      caption: joinWaitlistMsg.message,
-      reply_markup: new InlineKeyboard().webApp(
-        isJoinedWaitlist ? "Check My Points ✨💎" : "Join Waitlist 🚀🚀🚀",
-        isJoinedWaitlist
-          ? joinWaitlistMsg.link.joined
-          : joinWaitlistMsg.link.new
-      ),
+      ctx.replyWithPhoto("https://i.ibb.co/0rgHwc2/IMG-3987.png", {
+        caption: joinWaitlistMsg.message,
+        reply_markup: new InlineKeyboard().webApp(
+          isJoinedWaitlist ? "Check My Points ✨💎" : "Join Waitlist 🚀🚀🚀",
+          isJoinedWaitlist
+            ? joinWaitlistMsg.link.joined
+            : joinWaitlistMsg.link.new
+        ),
+      });
     });
-  });
-
-  bot.start();
+  } catch (error) {
+    console.log("Error occurred while processing request", error);
+  }
 });
 
 app.listen(port, async () => {

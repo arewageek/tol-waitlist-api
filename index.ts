@@ -1,12 +1,13 @@
 import express, { Express } from "express";
 import { Bot, InlineKeyboard } from "grammy";
 import { waitlistInvitation } from "./helpers/messages";
-import { verifyWaitlistStatus } from "./helpers/queries";
+import { setWebhook, verifyWaitlistStatus } from "./helpers/queries";
 
 const app: Express = express();
 const port = process.env.PORT || 5000;
 
 const botAPi = process.env.TELEGRAM_BOT_API as string;
+const webhookUrl = process.env.TELEGRAM_WEBHOOK_URL!;
 
 let bot: Bot;
 
@@ -24,24 +25,49 @@ function startBot() {
 
 startBot();
 
-app.get("/webhook/set", async function (req: Request, res: Response) {
-  const webhookUrl = process.env.TELEGRAM_WEBHOOK_URL;
+app.get("/webhook/verify", async function (req, res) {
+  const url = `https://api.telegram.org/bot${botAPi}/getWebhookInfo`;
+  try {
+    const verifyWebhook = await fetch(url);
+    if (verifyWebhook.ok) {
+      const data = await verifyWebhook.json();
 
-  const reqUrl = `https://api.telegram.org/bot${botAPi}/setWebhook?url=${webhookUrl}`;
+      const response = {
+        status: 200,
+        message: "Webhook verification successful",
+        data,
+      };
 
-  const headers = {
-    ContentType: "Application/json",
-  };
+      if (data.result.url == "") {
+        const set = await setWebhook(botAPi, webhookUrl);
+        console.log(set);
+        return res.json(set);
+      }
 
-  const webhook = await fetch(reqUrl, { headers });
+      console.log(response);
 
-  console.log({ status: await webhook.json() });
-  // console.log({ api: botAPi, url: reqUrl, whurl:webhookUrl})
-
-  res.json({ status: 200 });
+      console.log({ url: data.result.url });
+      return res.json(response);
+    } else {
+      const response = { status: 400, message: "Webhook verification failed" };
+      console.log(response);
+      return res.json(response);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: 500,
+      message: "An error occurred while verifying bot's webhook url",
+    });
+  }
 });
 
-app.post("/bot", async function (req: Request, res: Response) {
+app.get("/webhook/set", async function (req, res) {
+  const response = await setWebhook(botAPi, webhookUrl);
+  return res.json({ status: response });
+});
+
+app.post("/bot", async function (req, res) {
   try {
     console.log("received");
 

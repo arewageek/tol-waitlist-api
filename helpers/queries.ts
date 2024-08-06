@@ -24,3 +24,22 @@ export async function retrieveUserId(
 
   return wl.id;
 }
+
+export async function setWebhook(botApi: string, webhookUrl: string) {
+  try {
+    const reqUrl = `https://api.telegram.org/bot${botApi}/setWebhook?url=${webhookUrl}`;
+
+    const headers = {
+      ContentType: "Application/json",
+    };
+
+    const webhook = await fetch(reqUrl, { headers });
+
+    console.log({ status: await webhook.json() });
+
+    return 200;
+  } catch (error) {
+    console.log(error);
+    return 500;
+  }
+}

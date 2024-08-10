@@ -2,7 +2,7 @@ import Waitlist from "../models/waitlist";
 import { connectMongoDB } from "../lib/db";
 
 export async function verifyWaitlistStatus(
-  telegramId: string
+  telegramId: number | undefined
 ): Promise<boolean> {
   connectMongoDB();
 
@@ -18,11 +18,18 @@ export async function retrieveUserId(
 ): Promise<string | 404> {
   connectMongoDB();
 
-  const wl = await Waitlist.findOne({ tgId: telegramId });
+  const id = parseInt(telegramId);
+  console.log({ id });
 
-  if (!wl) return 404;
+  const wl = await Waitlist.findOne({ tgId: id });
+  // console.log({ wl });
 
-  return wl.id;
+  if (!wl) {
+    console.log("none");
+    return 404;
+  }
+
+  return wl.id.toLocaleString();
 }
 
 export async function setWebhook(botApi: string, webhookUrl: string) {

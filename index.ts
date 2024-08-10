@@ -128,10 +128,11 @@ try {
 
   bot.command("start", async (ctx) => {
     const sender = ctx.from;
+    console.log({ sender, senderId: sender?.id });
 
-    const isJoinedWaitlist = await verifyWaitlistStatus(
-      sender?.id.toLocaleString()!
-    );
+    const isJoinedWaitlist = await verifyWaitlistStatus(sender?.id!);
+
+    console.log({ isJoinedWaitlist });
 
     const joinWaitlistMsg = await waitlistInvitation(
       sender?.id as unknown as string,
